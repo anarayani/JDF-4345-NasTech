@@ -1,7 +1,9 @@
 import './CreateEvent.css'
 import { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 
 function CreateEvent() {
+    const history = useHistory();
     const [states, setStates] = useState([]);
     const [cities, setCities] = useState([]);
     const [search, setSearch] = useState("");
@@ -68,12 +70,12 @@ function CreateEvent() {
         setSearch(state.name);
         setFilteredStates([]);
         setIsStateSelected(true);
-        setStateCode(state.iso2);
         fetchCities(state.iso2);
     }
 
     const handleSearchCityChange = (event) => {
         setSearchCity(event.target.value);
+        console.log(event.target.value);
         setIsCitySelected(false);
     };
 
@@ -83,10 +85,15 @@ function CreateEvent() {
         setFilteredCities([]);
     };
 
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        history.push('/');
+    };
+
   return (
     <>
         <h3>New Event</h3>
-        <form>
+        <form onSubmit={handleSubmit}>
             <div id="eventName">
                 <label>Event Name</label>
                 <input type="text" id="eventNameInput" name="eventNameInput" required></input>
@@ -132,7 +139,7 @@ function CreateEvent() {
                     required
                 />
                 <ul className="suggestions">
-                    {filteredCities.map((city) => (
+                    {filteredCities && filteredCities.map((city) => (
                         <li
                             key={city.id}
                             onClick={() => handleSelectCity(city)}
@@ -146,8 +153,9 @@ function CreateEvent() {
                 <label>Description</label>
                 <input type="text" id="eventDescriptionInput" name="eventDescriptionInput" required></input>
             </div>
-            <button type="submit">Create Event</button>
+            <button type="submit">Create</button>
         </form>
+        <button onClick={() => history.push('/')}>Cancel</button>
     </>
   )
 }
