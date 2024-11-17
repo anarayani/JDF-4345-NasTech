@@ -10,7 +10,6 @@ function NonProfitHome() {
 
     useEffect(() => {
         fetchEvents();
-        console.log(events);
     }, [created]);
 
     //Populate from backend
