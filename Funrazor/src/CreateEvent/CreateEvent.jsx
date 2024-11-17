@@ -2,7 +2,7 @@ import './CreateEvent.css'
 import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
-function CreateEvent() {
+function CreateEvent({updateEvents}) {
     const history = useHistory();
     const [states, setStates] = useState([]);
     const [cities, setCities] = useState([]);
@@ -61,6 +61,35 @@ function CreateEvent() {
             .catch(err => console.error(err));
     }
 
+    /*
+    Creates a new event with form input using POST
+    */
+    const createEvent = (formInput) => {
+        fetch(`${import.meta.env.VITE_BACKEND_ADDRESS}/events`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    name: `${formInput.target.elements.eventNameInput.value}`,
+	                date: `${formInput.target.elements.dateInput.value}`,
+	                location: `${formInput.target.elements.cityInput.value}, ${formInput.target.elements.stateInput.value}`,
+                    description: `${formInput.target.elements.eventDescriptionInput.value}`,
+                    organizationId: 1
+                })
+            }
+        )
+        .then(response => {
+             if (!response.ok) {
+                 throw new Error(`HTTP error! status: ${response.status}`);
+             } else {
+                return response.json();
+              } 
+        })
+        .catch(error => {});
+    }
+
     const handleSearchChange = (event) => {
         setSearch(event.target.value);
         setIsStateSelected(false);
@@ -75,7 +104,6 @@ function CreateEvent() {
 
     const handleSearchCityChange = (event) => {
         setSearchCity(event.target.value);
-        console.log(event.target.value);
         setIsCitySelected(false);
     };
 
@@ -87,6 +115,8 @@ function CreateEvent() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
+        createEvent(event);
+        updateEvents();
         history.push('/');
     };
 
@@ -111,6 +141,7 @@ function CreateEvent() {
                 <input
                     type="text"
                     id="stateInput"
+                    name="stateInput"
                     value={search}
                     onChange={handleSearchChange}
                     placeholder="Start typing to search..."
@@ -132,6 +163,7 @@ function CreateEvent() {
                 <input
                     type="text"
                     id="cityInput"
+                    name="cityInput"
                     value={searchCity}
                     onChange={handleSearchCityChange}
                     placeholder="Start typing to search city..."
