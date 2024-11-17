@@ -2,7 +2,7 @@ import './CreateEvent.css'
 import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
-function CreateEvent() {
+function CreateEvent({updateEvents}) {
     const history = useHistory();
     const [states, setStates] = useState([]);
     const [cities, setCities] = useState([]);
@@ -87,6 +87,7 @@ function CreateEvent() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
+        updateEvents();
         history.push('/');
     };
 

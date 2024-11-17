@@ -1,9 +1,18 @@
 import './NonProfitHome.css'
 import CreateEvent from '../CreateEvent/CreateEvent'
 import EventListItem from "../EventListItem/EventListItem.jsx";
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Switch, Link} from 'react-router-dom';
 
 function NonProfitHome() {
+    const [events, setEvents] = useState([]);
+    const [created, setCreated] = useState(false);
+
+    useEffect(() => {
+        fetchEvents();
+        console.log(events);
+    }, [created]);
+
     //Populate from backend
     const dummyEventData = [
         {
@@ -23,6 +32,32 @@ function NonProfitHome() {
             eventDonationProgress: 50,
         },
     ];
+
+    /*
+    Fetches events from organization 1 using GET
+    */
+    const fetchEvents = () => {
+        fetch(`${import.meta.env.VITE_BACKEND_ADDRESS}/organizations/1/events`)
+        .then(response => {
+            //  if (!response.ok) {
+            //      throw new Error(`HTTP error! status: ${response.status}`);
+            //  } else {
+                return response.json();
+            //   } 
+        })
+        .then(data => {
+            console.log(data);
+            setEvents(data);
+        })
+        .catch(error => {
+            console.error('Error fetching events', error);
+        });
+    }
+
+    const updateEvents = () => {
+        setCreated(!created);
+    }
+
   return (
     <Router>
         <Switch>
@@ -50,11 +85,22 @@ function NonProfitHome() {
                             eventDonationProgress={event.eventDonationProgress}
                           />
                         ))}
+                        {events.map((event, index) => (
+                          <EventListItem
+                            key={event.id}
+                            eventImage={event.eventImage}
+                            eventName={event.name}
+                            rsvps={0}
+                            eventDate={event.date}
+                            eventDetails={event.description}
+                            eventDonationProgress={0}
+                          />
+                        ))}
                     </div>
                 </p>
             </Route>
             <Route path='/create-event'>
-                <CreateEvent></CreateEvent>
+                <CreateEvent updateEvents={updateEvents}></CreateEvent>
             </Route>
         </Switch>
     </Router>
