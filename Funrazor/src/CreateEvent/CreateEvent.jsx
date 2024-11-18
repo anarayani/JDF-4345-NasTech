@@ -29,6 +29,10 @@ function CreateEvent({updateEvents}) {
     }, [search, states, isStateSelected]);
 
     useEffect(() => {
+        document.title = 'New Event';
+      }, []);
+
+    useEffect(() => {
         if (searchCity && !isCitySelected) {
             const results = cities.filter(city =>
                 city.name.toLowerCase().includes(searchCity.toLowerCase())

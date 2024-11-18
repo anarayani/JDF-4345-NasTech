@@ -56,7 +56,9 @@ function NonProfitHome() {
     const updateEvents = () => {
         setCreated(!created);
     }
-
+    useEffect(() => {
+        document.title = 'Best Non-Profit Event Page';
+      }, []);
   return (
     <Router>
         <Switch>
@@ -69,8 +71,11 @@ function NonProfitHome() {
                     </div>
                     <div id="create-event-button">
                         <Link to='/create-event'>
-                            <button>Create event</button>
+                            <button>Create Event</button>
                         </Link>
+                    </div>
+                    <div id="event-list-header">
+                        <p>Active Events</p>
                     </div>
                     <div id="event-list">
                         {dummyEventData.map((event, index) => (
