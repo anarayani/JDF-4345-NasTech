@@ -63,3 +63,5 @@ The features implemented in this release were selected to establish a foundation
 ---
 
 This initial version serves as a foundation to test the technical stack and prepare for the next phase of development, ensuring alignment with project goals and team capabilities.
+
+**Demo**: https://drive.google.com/file/d/136ploTL-u0elk9si2jT9IChC5W9E8DUJ/view?usp=sharing
