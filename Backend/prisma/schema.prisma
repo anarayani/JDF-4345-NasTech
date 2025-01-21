@@ -27,4 +27,15 @@ model Event {
   description String
   organization Organization @relation(fields: [organizationId], references: [id])
   organizationId Int
+  rsvps Rsvp[]
+}
+
+model Rsvp {
+  id Int @id @default(autoincrement())
+  fname String
+  lname String
+  email String
+  status Int
+  event Event @relation(fields: [eventId], references: [id])
+  eventId Int
 }
