@@ -7,6 +7,7 @@ import { BrowserRouter as Router, Route, Switch, Link} from 'react-router-dom';
 function NonProfitHome() {
     const [events, setEvents] = useState([]);
     const [created, setCreated] = useState(false);
+    const [toggleEvents, setToggleEvents] = useState(true); // Toggle between current and past events
 
     useEffect(() => {
         fetchEvents();
@@ -30,6 +31,14 @@ function NonProfitHome() {
             eventDetails: 'Come check out how super cool this event is!',
             eventDonationProgress: 50,
         },
+        {
+            eventImage: '',
+            eventName: 'Old Event',
+            rsvps: 150,
+            eventDate: '2024-12-01',
+            eventDetails: 'Join us for awesome event!',
+            eventDonationProgress: 20,
+        },
     ];
 
     /*
@@ -42,7 +51,7 @@ function NonProfitHome() {
             //      throw new Error(`HTTP error! status: ${response.status}`);
             //  } else {
                 return response.json();
-            //   } 
+            //   }
         })
         .then(data => {
             console.log(data);
@@ -59,7 +68,12 @@ function NonProfitHome() {
     useEffect(() => {
         document.title = 'Best Non-Profit Event Page';
       }, []);
-  return (
+
+    const today = new Date();
+    const currEvents = dummyEventData.concat(events).filter(event => new Date(event.eventDate || event.date) >= today);
+    const pastEvents = dummyEventData.concat(events).filter(event => new Date(event.eventDate || event.date) < today);
+
+    return (
     <Router>
         <Switch>
             <Route exact path='/'>
@@ -69,35 +83,39 @@ function NonProfitHome() {
                         <p id="non-profit-details">This non-profit is the best one</p>
                         <img src="" alt="NonProfitImage" id="non-profit-image"/>
                     </div>
-                    <div id="create-event-button">
-                        <Link to='/create-event'>
-                            <button>Create Event</button>
-                        </Link>
-                    </div>
-                    <div id="event-list-header">
-                        <p>Active Events</p>
+                    <div id="event-buttons">
+                        <div id="create-event-button">
+                            <Link to='/create-event'>
+                                <button>+ Create Event</button>
+                            </Link>
+                        </div>
+                        <div id="event-filter">
+                            <div id="segmented-button">
+                                <button
+                                  className={`segmented ${toggleEvents ? 'curr' : ''}`} //Is .curr when active for css
+                                  onClick={() => setToggleEvents(true)}
+                                >
+                                    Current
+                                </button>
+                                <button
+                                  className={`segmented ${!toggleEvents ? 'curr' : ''}`}
+                                  onClick={() => setToggleEvents(false)}
+                                >
+                                    Old
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <div id="event-list">
-                        {dummyEventData.map((event, index) => (
+                        {(toggleEvents ? currEvents : pastEvents).map((event, index) => (
                           <EventListItem
                             key={index}
                             eventImage={event.eventImage}
-                            eventName={event.eventName}
-                            rsvps={event.rsvps}
-                            eventDate={event.eventDate}
-                            eventDetails={event.eventDetails}
-                            eventDonationProgress={event.eventDonationProgress}
-                          />
-                        ))}
-                        {events.map((event, index) => (
-                          <EventListItem
-                            key={event.id}
-                            eventImage={event.eventImage}
-                            eventName={event.name}
-                            rsvps={0}
-                            eventDate={event.date}
-                            eventDetails={event.description}
-                            eventDonationProgress={0}
+                            eventName={event.eventName || event.name}
+                            rsvps={event.rsvps || 0}
+                            eventDate={event.eventDate || event.date}
+                            eventDetails={event.eventDetails || event.description}
+                            eventDonationProgress={event.eventDonationProgress || 0}
                           />
                         ))}
                     </div>
@@ -108,7 +126,7 @@ function NonProfitHome() {
             </Route>
         </Switch>
     </Router>
-  )
+    )
 }
 
 export default NonProfitHome
