@@ -1,14 +1,12 @@
 import './App.css'
 import NonProfitHome from './NonProfitHome/NonProfitHome'
-import LoginButton from './Login/LoginButton/LoginButton'
-import LogoutButton from './LogoutButton/LogoutButton'
+import DiscoveryPage from './DiscoveryPage/DiscoveryPage'
 
 function App() {
 
   return (
     <main >
-      <LoginButton></LoginButton>
-      <LogoutButton></LogoutButton>
+      <DiscoveryPage></DiscoveryPage>
       <NonProfitHome></NonProfitHome>
     </main>
   )

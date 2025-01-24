@@ -46,6 +46,32 @@ app.post('/events', async (req, res) => {
     }
 });
 
+// POST endpoint for creating a user
+app.post('/user', async (req, res) => {
+    const { id } = req.body;
+
+    // try {
+        // Check if the email (id) already exists in the database
+        const existingUser = await prisma.user.findUnique({
+            where: { id },
+        });
+
+        if (existingUser) {
+            return res.status(400).json({ error: 'User with this email already exists.' });
+        }
+
+        const newUser = await prisma.user.create({
+            data: {
+                id
+            },
+        });
+        res.status(201).json(newUser);
+    // } catch (error) {
+    //     console.error(error);
+    //     res.status(500).json({ error: 'An error occurred while creating the user.' });
+    // }
+});
+
 // GET endpoint for retrieving all events for a specific organization
 app.get('/organizations/:organizationId/events', async (req, res) => {
     const { organizationId } = req.params;
