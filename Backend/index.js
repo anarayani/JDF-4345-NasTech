@@ -11,15 +11,27 @@ app.use(cors());
 
 // POST endpoint for creating an organization
 app.post('/organizations', async (req, res) => {
-    const { name } = req.body;
-  
+    const { name, userId } = req.body;
+
+    if (!name || !userId) {
+        return res.status(400).json({ error: 'Missing required fields: name or userId.' });
+    }
+
     try {
-      const newOrganization = await prisma.organization.create({
-        data: {
-          name,
-        },
-      });
-  
+    const newOrganization = await prisma.organization.create({
+      data: {
+        name,
+      },
+    });
+
+    await prisma.user.update({
+      where: { id: userId }, 
+      data: {
+        isOrgAdmin: true,
+        organizationId: newOrganization.id,
+      },
+    });
+
       res.status(201).json(newOrganization);
     } catch (error) {
       res.status(400).json({ error: 'Failed to create organization' });
@@ -71,6 +83,27 @@ app.post('/user', async (req, res) => {
     //     res.status(500).json({ error: 'An error occurred while creating the user.' });
     // }
 });
+
+// PATCH for changing user admin status
+app.patch('/userAdmin', async (req, res) => {
+    const { userId, isOrgAdmin, organizationId } = req.body;
+  
+    try {
+      const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: {
+          isOrgAdmin,
+          organizationId,
+        },
+      });
+  
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      console.error('Error updating user:', error);
+      res.status(500).json({ error: 'Failed to update user.' });
+    }
+});
+  
 
 // GET endpoint for retrieving all events for a specific organization
 app.get('/organizations/:organizationId/events', async (req, res) => {

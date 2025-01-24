@@ -2,6 +2,7 @@ import './DiscoveryPage.css';
 import { useAuth0 } from '@auth0/auth0-react';
 import LoginButton from '../LoginButton/LoginButton';
 import LogoutButton from '../LogoutButton/LogoutButton';
+import AdminButton from './AdminButton/AdminButton';
 import { useEffect } from 'react';
 
 function DiscoveryPage() {
@@ -35,6 +36,7 @@ function DiscoveryPage() {
     <main >
       <LoginButton></LoginButton>
       <LogoutButton></LogoutButton>
+      <AdminButton></AdminButton>
     </main>
   )
 }
