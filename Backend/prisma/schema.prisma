@@ -17,6 +17,7 @@ model Organization {
   id Int @id @default(autoincrement())
   name String
   events Event[]
+  admins User[]
 }
 
 model Event {
@@ -27,4 +28,13 @@ model Event {
   description String
   organization Organization @relation(fields: [organizationId], references: [id])
   organizationId Int
+}
+
+model User {
+  id             String        @id   // Use email as the primary key
+  firstName      String?
+  lastName       String?
+  isOrgAdmin     Boolean       @default(false)
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId Int?
 }
