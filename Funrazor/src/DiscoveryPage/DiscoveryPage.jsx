@@ -4,10 +4,12 @@ import LoginButton from '../LoginButton/LoginButton';
 import LogoutButton from '../LogoutButton/LogoutButton';
 import AdminButton from './AdminButton/AdminButton';
 import { useEffect, useState } from 'react';
+import NonProfitHome from '../NonProfitHome/NonProfitHome';
 
 function DiscoveryPage() {
   const { user, isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
   const [isOrgAdmin, setIsOrgAdmin] = useState(false);
+  const [adminOrg, setAdminOrg] = useState(0);
   const [isUserChecked, setIsUserChecked] = useState(false);
   const [closeAdminButton, setCloseAdminButton] = useState(false);
 
@@ -26,7 +28,12 @@ function DiscoveryPage() {
         throw new Error(`Failed to fetch user data: ${response.status}`);
       }
       const userData = await response.json();
+      console.log(userData);
       setIsOrgAdmin(userData.isOrgAdmin);
+      if (userData.isOrgAdmin) {
+        setAdminOrg(userData.organizationId);
+        console.log(userData.organizationId);
+      }
     } catch (error) {
       console.error('Error fetching user status:', error);
     } finally {
@@ -56,6 +63,7 @@ function DiscoveryPage() {
       <LoginButton></LoginButton>
       <LogoutButton></LogoutButton>
       {isAuthenticated && !isOrgAdmin && isUserChecked && <AdminButton setCloseAdminButton={setCloseAdminButton} closeAdminButton={closeAdminButton}></AdminButton>}
+      {isOrgAdmin && <NonProfitHome orgId={adminOrg}></NonProfitHome>}
     </main>
   )
 }

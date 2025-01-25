@@ -120,6 +120,26 @@ app.get('/organizations/:organizationId/events', async (req, res) => {
     }
 });
 
+// GET endpoint for retrieving an organization
+app.get('/organizations/:organizationId', async (req, res) => {
+  const { organizationId } = req.params; // Extract organizationId from params
+
+  try {
+    const organization = await prisma.organization.findUnique({
+      where: { id: parseInt(organizationId) },
+    });
+
+    if (!organization) {
+      return res.status(404).json({ error: 'Organization not found.' });
+    }
+
+    res.status(200).json(organization);
+  } catch (error) {
+    console.error('Error fetching organization:', error);
+    res.status(500).json({ error: 'An error occurred while fetching the organization.' });
+  }
+});
+
 app.get('/user/:id', async (req, res) => {
   const { id } = req.params;
   if (!id) {
@@ -134,6 +154,7 @@ app.get('/user/:id', async (req, res) => {
     }
     res.status(200).json({
       isOrgAdmin: user.isOrgAdmin,
+      organizationId: user.organizationId,
     });
   } catch (error) {
     console.error('Error fetching user:', error);
