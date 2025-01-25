@@ -2,7 +2,7 @@ import './AdminButton.css';
 import { useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 
-function AdminButton() {
+function AdminButton( {setCloseAdminButton, closeAdminButton} ) {
   const { user, isAuthenticated } = useAuth0();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [organizationName, setOrganizationName] = useState('');
@@ -14,6 +14,7 @@ function AdminButton() {
   const closeModal = () => {
     setIsModalOpen(false);
     setOrganizationName('');
+    setCloseAdminButton(!closeAdminButton);
   };
 
   const handleInputChange = (e) => {

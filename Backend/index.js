@@ -120,6 +120,27 @@ app.get('/organizations/:organizationId/events', async (req, res) => {
     }
 });
 
+app.get('/user/:id', async (req, res) => {
+  const { id } = req.params;
+  if (!id) {
+    return res.status(400).json({ error: 'Missing user ID.' });
+  }
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id },
+    });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+    res.status(200).json({
+      isOrgAdmin: user.isOrgAdmin,
+    });
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(500).json({ error: 'Failed to fetch user.' });
+  }
+});
+
 app.listen(port, () => {
     console.log('starting');
 })
