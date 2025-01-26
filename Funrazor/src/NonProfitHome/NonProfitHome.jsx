@@ -1,17 +1,21 @@
 import './NonProfitHome.css'
 import CreateEvent from '../CreateEvent/CreateEvent'
-import EventListItem from "../EventListItem/EventListItem.jsx";
-import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Switch, Link} from 'react-router-dom';
+import EventListItem from "../EventListItem/EventListItem.jsx"
+import { useState, useEffect } from 'react'
+import { BrowserRouter as Router, Route, Switch, Link} from 'react-router-dom'
+import { useAuth0 } from '@auth0/auth0-react'
 
-function NonProfitHome() {
+function NonProfitHome( {orgId} ) {
+    const { user, isAuthenticated } = useAuth0();
     const [events, setEvents] = useState([]);
     const [created, setCreated] = useState(false);
     const [toggleEvents, setToggleEvents] = useState(true); // Toggle between current and past events
+    const [organization, setOrganization] = useState([]);
 
     useEffect(() => {
         fetchEvents();
-    }, [created]);
+        fetchOrganization();
+    }, [isAuthenticated, created]);
 
     //Populate from backend
     const dummyEventData = [
@@ -42,10 +46,27 @@ function NonProfitHome() {
     ];
 
     /*
-    Fetches events from organization 1 using GET
+    Fetches admin's organization using GET
+    */
+    const fetchOrganization = () => {
+        fetch(`${import.meta.env.VITE_BACKEND_ADDRESS}/organizations/${orgId}`)
+        .then(response => {
+            return response.json();
+        })
+        .then(data => {
+            setOrganization(data);
+            console.log(data);
+        })
+        .catch(error => {
+            console.error('Error fetching organization', error);
+        });
+    }
+
+    /*
+    Fetches events from organization using GET
     */
     const fetchEvents = () => {
-        fetch(`${import.meta.env.VITE_BACKEND_ADDRESS}/organizations/1/events`)
+        fetch(`${import.meta.env.VITE_BACKEND_ADDRESS}/organizations/${orgId}/events`)
         .then(response => {
             //  if (!response.ok) {
             //      throw new Error(`HTTP error! status: ${response.status}`);
@@ -54,7 +75,6 @@ function NonProfitHome() {
             //   }
         })
         .then(data => {
-            console.log(data);
             setEvents(data);
         })
         .catch(error => {
@@ -66,66 +86,71 @@ function NonProfitHome() {
         setCreated(!created);
     }
     useEffect(() => {
-        document.title = 'Best Non-Profit Event Page';
-      }, []);
+        document.title = organization.name;
+    }, []);
 
     const today = new Date();
     const currEvents = dummyEventData.concat(events).filter(event => new Date(event.eventDate || event.date) >= today);
     const pastEvents = dummyEventData.concat(events).filter(event => new Date(event.eventDate || event.date) < today);
 
     return (
-    <Router>
-        <Switch>
-            <Route exact path='/'>
-                <p>
-                    <div id="non-profit-header">
-                        <p id="non-profit-name">Best Non-Profit</p>
-                        <p id="non-profit-details">This non-profit is the best one</p>
-                        <img src="" alt="NonProfitImage" id="non-profit-image"/>
-                    </div>
-                    <div id="event-buttons">
-                        <div id="create-event-button">
-                            <Link to='/create-event'>
-                                <button>+ Create Event</button>
-                            </Link>
-                        </div>
-                        <div id="event-filter">
-                            <div id="segmented-button">
-                                <button
-                                  className={`segmented ${toggleEvents ? 'curr' : ''}`} //Is .curr when active for css
-                                  onClick={() => setToggleEvents(true)}
-                                >
-                                    Current
-                                </button>
-                                <button
-                                  className={`segmented ${!toggleEvents ? 'curr' : ''}`}
-                                  onClick={() => setToggleEvents(false)}
-                                >
-                                    Old
-                                </button>
+        isAuthenticated && (
+            <Router>
+                <Switch>
+                    <Route exact path='/'>
+                        <p>
+                            {JSON.stringify(user.name)}
+                        </p>
+                        <p>
+                            <div id="non-profit-header">
+                                <p id="non-profit-name">{organization.name}</p>
+                                <p id="non-profit-details">This non-profit is the best one</p>
+                                <img src="" alt="NonProfitImage" id="non-profit-image"/>
                             </div>
-                        </div>
-                    </div>
-                    <div id="event-list">
-                        {(toggleEvents ? currEvents : pastEvents).map((event, index) => (
-                          <EventListItem
-                            key={index}
-                            eventImage={event.eventImage}
-                            eventName={event.eventName || event.name}
-                            rsvps={event.rsvps || 0}
-                            eventDate={event.eventDate || event.date}
-                            eventDetails={event.eventDetails || event.description}
-                            eventDonationProgress={event.eventDonationProgress || 0}
-                          />
-                        ))}
-                    </div>
-                </p>
-            </Route>
-            <Route path='/create-event'>
-                <CreateEvent updateEvents={updateEvents}></CreateEvent>
-            </Route>
-        </Switch>
-    </Router>
+                            <div id="event-buttons">
+                                <div id="create-event-button">
+                                    <Link to='/create-event'>
+                                        <button>+ Create Event</button>
+                                    </Link>
+                                </div>
+                                <div id="event-filter">
+                                    <div id="segmented-button">
+                                        <button
+                                        className={`segmented ${toggleEvents ? 'curr' : ''}`} //Is .curr when active for css
+                                        onClick={() => setToggleEvents(true)}
+                                        >
+                                            Current
+                                        </button>
+                                        <button
+                                        className={`segmented ${!toggleEvents ? 'curr' : ''}`}
+                                        onClick={() => setToggleEvents(false)}
+                                        >
+                                            Old
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="event-list">
+                                {(toggleEvents ? currEvents : pastEvents).map((event, index) => (
+                                <EventListItem
+                                    key={index}
+                                    eventImage={event.eventImage}
+                                    eventName={event.eventName || event.name}
+                                    rsvps={event.rsvps || 0}
+                                    eventDate={event.eventDate || event.date}
+                                    eventDetails={event.eventDetails || event.description}
+                                    eventDonationProgress={event.eventDonationProgress || 0}
+                                />
+                                ))}
+                            </div>
+                        </p>
+                    </Route>
+                    <Route path='/create-event'>
+                        <CreateEvent updateEvents={updateEvents} orgId={orgId}></CreateEvent>
+                    </Route>
+                </Switch>
+            </Router>
+        )
     )
 }
 
