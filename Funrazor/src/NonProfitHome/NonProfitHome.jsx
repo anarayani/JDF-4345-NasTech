@@ -1,6 +1,8 @@
 import './NonProfitHome.css'
 import CreateEvent from '../CreateEvent/CreateEvent'
 import EventListItem from "../EventListItem/EventListItem.jsx";
+import RSVPDashboard from "../RSVPDashboard/RSVPDashboard.jsx";
+
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Switch, Link} from 'react-router-dom';
 
@@ -90,15 +92,17 @@ function NonProfitHome() {
                           />
                         ))}
                         {events.map((event, index) => (
-                          <EventListItem
-                            key={event.id}
-                            eventImage={event.eventImage}
-                            eventName={event.name}
-                            rsvps={0}
-                            eventDate={event.date}
-                            eventDetails={event.description}
-                            eventDonationProgress={0}
-                          />
+                          <Link to={"/details/"+event.id}>
+                            <EventListItem
+                                key={event.id}
+                                eventImage={event.eventImage}
+                                eventName={event.name}
+                                rsvps={0}
+                                eventDate={event.date}
+                                eventDetails={event.description}
+                                eventDonationProgress={0}
+                            />
+                          </Link>
                         ))}
                     </div>
                 </p>
@@ -106,6 +110,7 @@ function NonProfitHome() {
             <Route path='/create-event'>
                 <CreateEvent updateEvents={updateEvents}></CreateEvent>
             </Route>
+            <Route path='/details/:id' element={<RSVPDashboard />}/>
         </Switch>
     </Router>
   )
