@@ -28,6 +28,17 @@ model Event {
   description String
   organization Organization @relation(fields: [organizationId], references: [id])
   organizationId Int
+  rsvpResponses RSVPResponse[]
+}
+
+model RSVPResponse {
+  id Int @id @default(autoincrement())
+  email String
+  name String
+  response String
+  eventId Int
+  event Event @relation(fields: [eventId], references: [id])
+  timestamp DateTime @default(now())
 }
 
 model User {
