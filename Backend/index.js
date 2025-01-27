@@ -62,7 +62,7 @@ app.post('/events', async (req, res) => {
 app.post('/user', async (req, res) => {
     const { id } = req.body;
 
-    // try {
+    try {
         // Check if the email (id) already exists in the database
         const existingUser = await prisma.user.findUnique({
             where: { id },
@@ -78,10 +78,29 @@ app.post('/user', async (req, res) => {
             },
         });
         res.status(201).json(newUser);
-    // } catch (error) {
-    //     console.error(error);
-    //     res.status(500).json({ error: 'An error occurred while creating the user.' });
-    // }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while creating the user.' });
+    }
+});
+
+// POST endpoint to create an RSVP
+app.post('/rsvp', async (req, res) => {
+  const { email, response, eventId } = req.body;
+
+  try {
+      const newRSVP = await prisma.rSVPResponse.create({
+          data: {
+              email,
+              response,
+              eventId,
+          },
+      });
+      res.status(201).json(newRSVP);
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Failed to create RSVP' });
+  }
 });
 
 // PATCH for changing user admin status
@@ -140,6 +159,7 @@ app.get('/organizations/:organizationId', async (req, res) => {
   }
 });
 
+// GET endpoint to retrieve a user admin status and their organization
 app.get('/user/:id', async (req, res) => {
   const { id } = req.params;
   if (!id) {
