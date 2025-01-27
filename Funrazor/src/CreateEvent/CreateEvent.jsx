@@ -2,7 +2,7 @@ import './CreateEvent.css'
 import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
-function CreateEvent({updateEvents}) {
+function CreateEvent( {updateEvents, orgId} ) {
     const history = useHistory();
     const [states, setStates] = useState([]);
     const [cities, setCities] = useState([]);
@@ -80,7 +80,7 @@ function CreateEvent({updateEvents}) {
 	                date: `${formInput.target.elements.dateInput.value}`,
 	                location: `${formInput.target.elements.cityInput.value}, ${formInput.target.elements.stateInput.value}`,
                     description: `${formInput.target.elements.eventDescriptionInput.value}`,
-                    organizationId: 1
+                    organizationId: orgId
                 })
             }
         )

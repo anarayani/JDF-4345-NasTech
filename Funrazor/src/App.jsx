@@ -1,12 +1,12 @@
 import './App.css'
-import NonProfitHome from './NonProfitHome/NonProfitHome'
+import DiscoveryPage from './DiscoveryPage/DiscoveryPage'
 
 function App() {
 
   return (
-    <>
-      <NonProfitHome></NonProfitHome>
-    </>
+    <main >
+      <DiscoveryPage></DiscoveryPage>
+    </main>
   )
 }
 
