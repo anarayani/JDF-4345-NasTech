@@ -6,6 +6,7 @@ import RSVPDashboard from "../RSVPDashboard/RSVPDashboard.jsx";
 import { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Route, Switch, Link} from 'react-router-dom'
 import { useAuth0 } from '@auth0/auth0-react'
+import NonProfitEventPage from "../NonProfitEventPage/NonProfitEventPage.jsx";
 
 function NonProfitHome( {orgId} ) {
     const { user, isAuthenticated } = useAuth0();
@@ -15,37 +16,11 @@ function NonProfitHome( {orgId} ) {
     const [organization, setOrganization] = useState([]);
 
     useEffect(() => {
-        fetchEvents();
-        fetchOrganization();
+        if (isAuthenticated) {
+            fetchEvents();
+            fetchOrganization();
+        }
     }, [isAuthenticated, created]);
-
-    //Populate from backend
-    const dummyEventData = [
-        {
-            eventImage: '',
-            eventName: 'Awesome Event',
-            rsvps: 150,
-            eventDate: '2025-12-01',
-            eventDetails: 'Join us for awesome event!',
-            eventDonationProgress: 75,
-        },
-        {
-            eventImage: '',
-            eventName: 'Super Cool Event',
-            rsvps: 300,
-            eventDate: '2025-11-20',
-            eventDetails: 'Come check out how super cool this event is!',
-            eventDonationProgress: 50,
-        },
-        {
-            eventImage: '',
-            eventName: 'Old Event',
-            rsvps: 150,
-            eventDate: '2024-12-01',
-            eventDetails: 'Join us for awesome event!',
-            eventDonationProgress: 20,
-        },
-    ];
 
     /*
     Fetches admin's organization using GET
@@ -92,8 +67,8 @@ function NonProfitHome( {orgId} ) {
     }, []);
 
     const today = new Date();
-    const currEvents = dummyEventData.concat(events).filter(event => new Date(event.eventDate || event.date) >= today);
-    const pastEvents = dummyEventData.concat(events).filter(event => new Date(event.eventDate || event.date) < today);
+    const currEvents = events.filter(event => new Date(event.date) >= today);
+    const pastEvents = events.filter(event => new Date(event.date) < today);
 
     return (
         isAuthenticated && (
@@ -103,62 +78,66 @@ function NonProfitHome( {orgId} ) {
                         <p>
                             {JSON.stringify(user.name)}
                         </p>
-                        <p>
-                            <div id="non-profit-header">
-                                <p id="non-profit-name">{organization.name}</p>
-                                <p id="non-profit-details">This non-profit is the best one</p>
-                                <img src="" alt="NonProfitImage" id="non-profit-image"/>
+                        <div id="non-profit-header">
+                            <p id="non-profit-name">{organization.name}</p>
+                            <p id="non-profit-details">{organization.description || 'This non-profit is the best one'}</p>
+                            <img src={organization.image || ''} alt="NonProfitImage" id="non-profit-image"/>
+                        </div>
+                        <div id="event-buttons">
+                            <div id="create-event-button">
+                                <Link to='/create-event'>
+                                    <button>+ Create Event</button>
+                                </Link>
                             </div>
-                            <div id="event-buttons">
-                                <div id="create-event-button">
-                                    <Link to='/create-event'>
-                                        <button>+ Create Event</button>
-                                    </Link>
-                                </div>
-                                <div id="event-filter">
-                                    <div id="segmented-button">
-                                        <button
-                                        className={`segmented ${toggleEvents ? 'curr' : ''}`} //Is .curr when active for css
-                                        onClick={() => setToggleEvents(true)}
-                                        >
-                                            Current
-                                        </button>
-                                        <button
-                                        className={`segmented ${!toggleEvents ? 'curr' : ''}`}
-                                        onClick={() => setToggleEvents(false)}
-                                        >
-                                            Old
-                                        </button>
-                                    </div>
+                            <div id="event-filter">
+                                <div id="segmented-button">
+                                    <button
+                                      className={`segmented ${toggleEvents ? 'curr' : ''}`} // Is .curr when active for css
+                                      onClick={() => setToggleEvents(true)}
+                                    >
+                                        Current
+                                    </button>
+                                    <button
+                                      className={`segmented ${!toggleEvents ? 'curr' : ''}`}
+                                      onClick={() => setToggleEvents(false)}
+                                    >
+                                        Old
+                                    </button>
                                 </div>
                             </div>
-                            <div id="event-list">
-                                {(toggleEvents ? currEvents : pastEvents).map((event, index) => (
-                                  <Link to = {`/details-event/${event.id}`}>
+
+                        </div>
+                        <div id="event-list">
+                            {(toggleEvents ? currEvents : pastEvents).map((event, index) => (
+                                <Link to={`/events/${event.id}`} key={index} style={{textDecoration: 'none'}}>
                                     <EventListItem
-                                        key={index}
-                                        eventImage={event.eventImage}
-                                        eventName={event.eventName || event.name}
-                                        rsvps={event.rsvps || 0}
-                                        eventDate={event.eventDate || event.date}
-                                        eventDetails={event.eventDetails || event.description}
-                                        eventDonationProgress={event.eventDonationProgress || 0}
+                                    eventImage={event.eventImage || ''}
+                                    eventName={event.name}
+                                    rsvps={event.rsvps || 0}
+                                    eventDate={event.date}
+                                    eventDetails={event.description}
+                                    eventDonationProgress={event.donationProgress || 0}
                                     />
-                                  </Link>
-                                ))}
-                            </div>
-                        </p>
+                                </Link>
+                            ))}
+                        </div>
                     </Route>
                     <Route path='/create-event'>
                         <CreateEvent updateEvents={updateEvents} orgId={orgId}></CreateEvent>
                     </Route>
-                    <Route path='/details-event/:id'>
-                        <RSVPDashboard></RSVPDashboard>
-                    </Route>
+
+                    <Route
+                      path='/events/:eventId'
+                      render={({ match }) => {
+                          const { eventId } = match.params;
+                          const selectedEvent = events.find(event => String(event.id) === eventId);
+                          return <NonProfitEventPage event={selectedEvent} />;
+                      }}
+                    />
                 </Switch>
             </Router>
         )
-    )
+    );
 }
 
 export default NonProfitHome
