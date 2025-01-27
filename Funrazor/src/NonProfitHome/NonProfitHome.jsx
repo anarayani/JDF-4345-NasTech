@@ -30,7 +30,6 @@ function NonProfitHome( {orgId} ) {
         })
         .then(data => {
             setOrganization(data);
-            console.log(data);
         })
         .catch(error => {
             console.error('Error fetching organization', error);
@@ -43,11 +42,11 @@ function NonProfitHome( {orgId} ) {
     const fetchEvents = () => {
         fetch(`${import.meta.env.VITE_BACKEND_ADDRESS}/organizations/${orgId}/events`)
         .then(response => {
-            //  if (!response.ok) {
-            //      throw new Error(`HTTP error! status: ${response.status}`);
-            //  } else {
+             if (!response.ok) {
+                 throw new Error(`HTTP error! status: ${response.status}`);
+             } else {
                 return response.json();
-            //   }
+              }
         })
         .then(data => {
             setEvents(data);

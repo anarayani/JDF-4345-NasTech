@@ -34,7 +34,7 @@ model Event {
 model RSVPResponse {
   id Int @id @default(autoincrement())
   email String
-  name String
+  name String?
   response String
   eventId Int
   event Event @relation(fields: [eventId], references: [id])
