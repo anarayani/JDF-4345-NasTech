@@ -8,6 +8,83 @@
 
 ## Release Notes
 
+### Version 0.1.0
+
+This section outlines all updates and features introduced in the current release.
+
+---
+
+## Frontend Updates
+
+1. **Authentication**:
+   - Integrated **Auth0** for user authentication with `LoginButton.jsx` and `LogoutButton.jsx`.
+   - Ensures secure access and supports non-profit administrators and attendees.
+
+2. **Event Management**:
+   - **CreateEvent.jsx**:
+     - Enables users to create events with dynamic state and city suggestions using the `countrystatecity.in` API.
+     - Adds new events to the database through a form submission workflow.
+   - **EventListItem.jsx**:
+     - Displays event details such as images, RSVPs, and donation progress.
+
+3. **RSVP System**:
+   - **RsvpPopUp.jsx**:
+     - Allows users to RSVP for events with options like "Yes," "No," or "Maybe."
+     - Supports event organizers in tracking attendance.
+
+4. **Non-Profit Dashboard**:
+   - **NonProfitHome.jsx**:
+     - Displays current and past events with filtering options.
+     - Allows administrators to create events and view detailed pages for each event.
+
+5. **Styling Improvements**:
+   - Introduced responsive designs across components.
+   - Enhanced styling with consistent hover effects and modal dialogs.
+
+---
+
+## Backend Updates
+
+1. **Core Configuration**:
+   - Backend built with **Express.js** for handling API requests.
+   - ORM integration with **Prisma** for database management.
+   - Database: PostgreSQL with schema defined in `schema.prisma`.
+
+2. **API Endpoints**:
+   - Implemented RESTful endpoints in `index.js` for managing events, organizations, and user interactions.
+
+3. **Description Management**:
+   - Added **descriptionController.js** and **descriptionModel.js** for handling descriptions (likely for events or organizations).
+
+4. **Database Migrations**:
+   - Managed migrations using Prisma with files such as `migration.sql` and `migration_lock.toml`.
+
+5. **Dependencies**:
+   - Key dependencies include:
+     - `@prisma/client`: Database interactions.
+     - `express`: Server framework.
+     - `cors`: Middleware for cross-origin requests.
+
+---
+
+## Deployment and Environment Setup
+
+1. **Frontend**:
+   - Run `npm install` in the frontend directory to install dependencies.
+   - Start the development server using `npm start`.
+
+2. **Backend**:
+   - Run `npm install` in the backend directory to install dependencies.
+   - Configure the `.env` file with database credentials and Auth0 settings.
+   - Start the server with `node index.js` or `npm start`.
+
+3. **Database**:
+   - Use the Prisma CLI for migrations:
+     - `npx prisma migrate dev` to apply migrations.
+
+---
+
+
 ### Version 0.0.0
 
 #### Features
