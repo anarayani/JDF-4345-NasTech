@@ -185,3 +185,43 @@ app.get('/user/:id', async (req, res) => {
 app.listen(port, () => {
     console.log('starting');
 })
+
+// GET endpoint for retreiving an event
+app.get('/events/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const entry = await prisma.entry.findUnique({
+            where: { id: parseInt(id) },
+        });
+
+        if (!entry) {
+            return res.status(404).json({ error: 'Entry not found' });
+        }
+
+        res.json(entry);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch entry' });
+    }
+});
+
+// GET endpoint for retrieving RSVPs for a given event
+app.get('/rsvps/:eventId', async (req, res) => {
+  const { eventId } = req.params;
+
+  try {
+      const rsvps = await prisma.rsvp.findMany({
+          where: { eventId: parseInt(eventId) },
+      });
+
+      const statusSummary = rsvps.reduce((acc, rsvp) => {
+          acc[rsvp.status] = (acc[rsvp.status] || 0) + 1;
+          return acc;
+      }, {});
+
+      res.json({ rsvps, statusSummary });
+  } catch (error) {
+      console.error('Error fetching RSVPs:', error);
+      res.status(500).json({ error: 'Failed to fetch RSVPs' });
+  }
+});

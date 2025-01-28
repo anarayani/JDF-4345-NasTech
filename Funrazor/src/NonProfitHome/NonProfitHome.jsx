@@ -1,6 +1,8 @@
 import './NonProfitHome.css'
 import CreateEvent from '../CreateEvent/CreateEvent'
 import EventListItem from "../EventListItem/EventListItem.jsx"
+import RSVPDashboard from "../RSVPDashboard/RSVPDashboard.jsx";
+
 import { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Route, Switch, Link} from 'react-router-dom'
 import { useAuth0 } from '@auth0/auth0-react'
@@ -102,6 +104,7 @@ function NonProfitHome( {orgId} ) {
                                     </button>
                                 </div>
                             </div>
+
                         </div>
                         <div id="event-list">
                             {(toggleEvents ? currEvents : pastEvents).map((event, index) => (
@@ -121,6 +124,7 @@ function NonProfitHome( {orgId} ) {
                     <Route path='/create-event'>
                         <CreateEvent updateEvents={updateEvents} orgId={orgId}></CreateEvent>
                     </Route>
+
                     <Route
                       path='/events/:eventId'
                       render={({ match }) => {
