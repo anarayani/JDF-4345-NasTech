@@ -62,7 +62,7 @@ app.post('/events', async (req, res) => {
 app.post('/user', async (req, res) => {
     const { id } = req.body;
 
-    // try {
+    try {
         // Check if the email (id) already exists in the database
         const existingUser = await prisma.user.findUnique({
             where: { id },
@@ -78,10 +78,29 @@ app.post('/user', async (req, res) => {
             },
         });
         res.status(201).json(newUser);
-    // } catch (error) {
-    //     console.error(error);
-    //     res.status(500).json({ error: 'An error occurred while creating the user.' });
-    // }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while creating the user.' });
+    }
+});
+
+// POST endpoint to create an RSVP
+app.post('/rsvp', async (req, res) => {
+  const { email, response, eventId } = req.body;
+
+  try {
+      const newRSVP = await prisma.rSVPResponse.create({
+          data: {
+              email,
+              response,
+              eventId,
+          },
+      });
+      res.status(201).json(newRSVP);
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Failed to create RSVP' });
+  }
 });
 
 // PATCH for changing user admin status
@@ -120,6 +139,17 @@ app.get('/organizations/:organizationId/events', async (req, res) => {
     }
 });
 
+// GET endpoint for retrieving all organizations
+app.get('/organizations', async (req, res) => {
+  try {
+    const organizations = await prisma.organization.findMany();
+    res.status(200).json(organizations);
+  } catch (error) {
+    console.error('Error fetching organizations:', error);
+    res.status(500).json({ error: 'An error occurred while fetching organizations.' });
+  }
+});
+
 // GET endpoint for retrieving an organization
 app.get('/organizations/:organizationId', async (req, res) => {
   const { organizationId } = req.params; // Extract organizationId from params
@@ -140,6 +170,7 @@ app.get('/organizations/:organizationId', async (req, res) => {
   }
 });
 
+// GET endpoint to retrieve a user admin status and their organization
 app.get('/user/:id', async (req, res) => {
   const { id } = req.params;
   if (!id) {
@@ -166,44 +197,42 @@ app.listen(port, () => {
     console.log('starting');
 })
 
-app.post('/description', async (req, res) => {
-  const { description } = req.body;
+// GET endpoint for retreiving an event
+app.get('/events/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const entry = await prisma.entry.findUnique({
+            where: { id: parseInt(id) },
+        });
 
-  if (!description) {
-      return res.status(400).json({ error: 'Description is required.' });
-  }
+        if (!entry) {
+            return res.status(404).json({ error: 'Entry not found' });
+        }
 
-  try {
-      const newDescription = await prisma.description.create({
-          data: {
-              description,
-          },
-      });
-      res.status(201).json(newDescription);
-  } catch (error) {
-      console.error('Error saving description:', error);
-      res.status(500).json({ error: 'Failed to save description.' });
-  }
+        res.json(entry);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch entry' });
+    }
 });
 
-app.get('/description/:id', async (req, res) => {
-  const { id } = req.params;
+// GET endpoint for retrieving RSVPs for a given event
+app.get('/rsvps/:eventId', async (req, res) => {
+  const { eventId } = req.params;
 
   try {
-      const description = await prisma.description.findUnique({
-          where: { id: parseInt(id) },
+      const rsvps = await prisma.rsvp.findMany({
+          where: { eventId: parseInt(eventId) },
       });
 
-      if (!description) {
-          return res.status(404).json({ error: 'Description not found.' });
-      }
+      const statusSummary = rsvps.reduce((acc, rsvp) => {
+          acc[rsvp.status] = (acc[rsvp.status] || 0) + 1;
+          return acc;
+      }, {});
 
-      res.status(200).json(description);
+      res.json({ rsvps, statusSummary });
   } catch (error) {
-      console.error('Error fetching description:', error);
-      res.status(500).json({ error: 'Failed to fetch description.' });
+      console.error('Error fetching RSVPs:', error);
+      res.status(500).json({ error: 'Failed to fetch RSVPs' });
   }
-});
-app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
 });
