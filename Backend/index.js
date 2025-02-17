@@ -2,12 +2,45 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const express = require('express');
 const cors = require('cors');
+const nodemailer = require('nodemailer');
+require('dotenv').config();
 
 const app = express();
 const port = 3000;
 
 app.use(express.json());
 app.use(cors());
+
+// Configure Nodemailer Transporter
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+  },
+});
+
+// RSVP Route for confirmation email
+app.post('/rsvpMail', async (req, res) => {
+  const { email, response, eventId, eventName, eventDate } = req.body;
+
+  try {
+      const mailOptions = {
+          from: process.env.EMAIL_USER,
+          to: email,
+          subject: `RSVP Confirmation for ${eventName}`,
+          text: `Hello,\n\nYou have successfully RSVP'd with response: ${response}\n\nEvent: ${eventName}\nDate: ${new Date(eventDate).toLocaleString()}\n\nThank you for your response!\n\n- Funrazor Team`,
+      };
+
+      await transporter.sendMail(mailOptions);
+
+      res.status(200).json({ message: 'RSVP submitted and email sent!' });
+  } catch (error) {
+      console.error('Error sending RSVP email:', error);
+      res.status(500).json({ message: 'RSVP submission failed.' });
+  }
+});
+
 
 // POST endpoint for creating an organization
 app.post('/organizations', async (req, res) => {
