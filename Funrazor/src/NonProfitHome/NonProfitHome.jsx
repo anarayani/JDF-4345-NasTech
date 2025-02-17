@@ -15,12 +15,17 @@ function NonProfitHome( {orgId} ) {
     const [toggleEvents, setToggleEvents] = useState(true); // Toggle between current and past events
     const [organization, setOrganization] = useState([]);
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [postsPerPage, setPostsPerPage] = useState(10);
+
     useEffect(() => {
         if (isAuthenticated) {
             fetchEvents();
             fetchOrganization();
         }
     }, [isAuthenticated, created]);
+
+    
 
     /*
     Fetches admin's organization using GET
@@ -68,7 +73,10 @@ function NonProfitHome( {orgId} ) {
     const today = new Date();
     const currEvents = events.filter(event => new Date(event.date) >= today);
     const pastEvents = events.filter(event => new Date(event.date) < today);
-
+    const filteredEvents = toggleEvents ? currEvents : pastEvents;
+    const totalPages = Math.ceil(filteredEvents.length / postsPerPage);
+    const startIndex = (currentPage - 1) * postsPerPage;
+    const selectedEvents = filteredEvents.slice(startIndex, startIndex + postsPerPage);
     return (
         isAuthenticated && (
             <Router>
@@ -107,7 +115,7 @@ function NonProfitHome( {orgId} ) {
 
                         </div>
                         <div id="event-list">
-                            {(toggleEvents ? currEvents : pastEvents).map((event, index) => (
+                            {selectedEvents.map((event, index) => (
                                 <Link to={`/events/${event.id}`} key={index} style={{textDecoration: 'none'}}>
                                     <EventListItem
                                     eventImage={event.eventImage || ''}
@@ -119,6 +127,11 @@ function NonProfitHome( {orgId} ) {
                                     />
                                 </Link>
                             ))}
+                        </div>
+                        <div id="pagination-controls">
+                            <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>Previous</button>
+                            <span> Page {currentPage} of {totalPages} </span>
+                            <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)}>Next</button>
                         </div>
                     </Route>
                     <Route path='/create-event'>
