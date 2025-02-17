@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "RSVPResponse" ALTER COLUMN "name" DROP NOT NULL;

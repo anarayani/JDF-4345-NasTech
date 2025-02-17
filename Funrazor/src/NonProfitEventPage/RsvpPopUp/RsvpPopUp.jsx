@@ -3,7 +3,8 @@ import { useState } from 'react'
 function RsvpPopUp({ isOpen, onClose, onRSVP }) {
     const [response, setResponse] = useState('');
 
-    const handleRSVP = () => {
+    const handleRSVP = (e) => {
+        e.preventDefault();
         if (response) {
             onRSVP(response);
             onClose();
