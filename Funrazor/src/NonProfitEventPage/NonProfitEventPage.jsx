@@ -15,6 +15,8 @@ function NonProfitEventPage( {event} ) {
 			email: user.name,
 			response,
 			eventId: event.id,
+			eventName: event.name, 
+			eventDate: event.date,
 		};
 	
 		try {
@@ -25,8 +27,16 @@ function NonProfitEventPage( {event} ) {
 				},
 				body: JSON.stringify(rsvpData),
 			});
+
+			const res2 = await fetch(`${import.meta.env.VITE_BACKEND_ADDRESS}/rsvpMail`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(rsvpData),
+			});
 	
-			if (res.ok) {
+			if (res.ok && res2.ok) {
 				const result = await res.json();
 				alert('RSVP submitted successfully!');
 			} else {
