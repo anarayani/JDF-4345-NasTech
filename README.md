@@ -8,8 +8,6 @@
 
 ## Release Notes
 
----
-
 ### Version 0.2.0
 
 This section outlines all updates and features introduced in the current release.
