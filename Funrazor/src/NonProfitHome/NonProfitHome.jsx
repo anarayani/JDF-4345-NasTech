@@ -129,9 +129,9 @@ function NonProfitHome( {orgId} ) {
                             ))}
                         </div>
                         <div id="pagination-controls">
-                            <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>Previous</button>
+                            <button id="pagination-buttons" disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>Previous</button>
                             <span> Page {currentPage} of {totalPages} </span>
-                            <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)}>Next</button>
+                            <button id="pagination-buttons" disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)}>Next</button>
                         </div>
                     </Route>
                     <Route path='/create-event'>
