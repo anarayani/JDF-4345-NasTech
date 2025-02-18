@@ -42,6 +42,7 @@ This section outlines all updates and features introduced in the current release
 
 - Users can RSVP multiple times instead of updating their existing RSVP.
 - RSVP options are available for past events, which should be disabled.
+- Some event calls are used to access rsvp count, and 0 rsvps are displayed. 
 
 ---
 
