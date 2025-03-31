@@ -68,6 +68,11 @@ const EventDetailsPage = ({}) => {
 							<div id="event-details-about-card">About</div>
 							<div id="event-details-about-info">Date: {new Date(event.date).toLocaleDateString()}</div>
 							<div id="event-details-about-info">RSVPs: {rsvpCount.total}</div>
+							{event.rsvpResponses?.length > 0 && (
+								<button onClick={() => downloadJSON(event.rsvpResponses)} id="download-rsvp-button">
+								Download RSVPs
+								</button>
+							)}
 							<div id="event-details-about-info">{event.description}</div>
 						</div>
 					</div>
